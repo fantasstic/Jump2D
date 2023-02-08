@@ -5,14 +5,18 @@ using UnityEngine;
 public class PlayerJump : MonoBehaviour
 {
     [SerializeField] private float _jumpForce;
+    [SerializeField] private float _jumpSpeed;
     [SerializeField] private GameObject _restartButton;
 
-    private bool _isGround;
+    
     private Rigidbody2D _rigidbody;
+    private float _startHoldTime;
+    private Animator _animator;
 
     private void Start()
     {
         _rigidbody = GetComponent<Rigidbody2D>();
+        _animator = GetComponent<Animator>();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -26,25 +30,19 @@ public class PlayerJump : MonoBehaviour
 
     private void Update()
     {
+        if(Input.GetMouseButtonDown(0))
+        {
+            _startHoldTime = Time.time;
+        }
+
         if (Input.GetMouseButtonUp(0))
         {
-            float velocityX = _rigidbody.velocity.x;
-            float startTime = Time.time;
-            velocityX = Time.time - startTime;
-            _rigidbody.AddForce(new Vector2(velocityX, _jumpForce));
+            float relizeTime = Time.time;
+            float jumpVelocity = _startHoldTime - relizeTime;
+            _rigidbody.AddForce(new Vector2(-jumpVelocity * _jumpSpeed, _jumpForce));
+            _animator.Play("Jump");
         }
+
+        
     }
-
-    /*private void Jump()
-    {
-        if (gameObject.tag == "Ground")
-        {
-            _isGround = true;
-        }
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            _rigidbody.AddForce(new Vector2(_rigidbody.velocity.x, _jumpForce));
-        }
-    }*/
 }
